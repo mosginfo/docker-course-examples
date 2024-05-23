@@ -53,7 +53,7 @@ docker history --no-trunc example-layers
 docker rmi debian:12-slim
 docker rmi debian:bookworm-slim
 
-# Удалить неиспользуемые изображения
+# Удалить неиспользуемые образы
 docker image prune
 ```
 

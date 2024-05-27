@@ -16,7 +16,7 @@ RUN pip install \
         -r requirements.txt \
     && mkdir /upload && chown user:user /upload && chmod 1777 /upload
 
-#VOLUME /upload
+VOLUME /upload
 
 COPY . .
 

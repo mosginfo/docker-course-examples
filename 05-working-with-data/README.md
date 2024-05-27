@@ -53,15 +53,17 @@ docker run --rm -ti \
 
 ## Volumes
 
-Инструкцию `VOLUME` следует использовать для:
+С помощью инструкции `VOLUME` можно описать точки монтирования томов.
 
-1. Обеспечения сохранности данных, например, СУБД, загруженные пользователем файлы и т.п.
-   Docker будет создавать том даже если не указан аргумент `-v` или `--mount`.
-2. Информирования пользователей о путях в контейнере, в которых хранятся постоянные данные.
+Тома в Docker нужны для обеспечения сохранности данных, например, файлов - загруженных пользователем, или файлов СУБД и тому подобных.
+
+Любой, кто будет просматривать информацию об образе, узнает, какие пути в контейнере используются для сохранения постоянных данных.
+
+Docker будет создавать том даже если не указан аргумент `-v` или `--mount`.
 
 ### Чем volume лучше bind mount?
 
-1. Легче выполнять резервное копирование или миграцию
+1. Легче выполнять резервное копирование или миграцию.
 2. Драйверы томов позволяют использовать разные хранилища,
    например, NFS, Samba, SSHFS, облако, или шифровать данные.
 3. Можно предварительно инициализировать топ нужными данными в `Dockerfile`.
@@ -76,8 +78,10 @@ docker run --rm -ti \
 
 # Пример с СУБД PostgeSQL
 
+docker pull postgres:16.2-bookworm
+
 # Просмотр задекларированных томов в образе
-docker inspect --format '{{json .Config.Volumes }}' postgres:16.2-bookworm
+docker inspect --format '{{json .Config.Volumes}}' postgres:16.2-bookworm
 
 # Стартуем контейнер с использованием именованного тома
 docker run --rm -d \
@@ -96,7 +100,15 @@ docker exec -i postgres_1 psql -U postgres demo -c 'SELECT * FROM category;'
 
 ## tmpfs
 
+**Tmpfs** (temporary file system) - это файловая система, которая хранит все свои файлы в виртуальной памяти.
+
+Все в `tmpfs` является временным в том смысле, что на вашем жестком диске не будут созданы файлы. Если вы размонтируете экземпляр `tmpfs`, все, что в нем хранится, будет потеряно.
+
+Это может быть полезно для хранения временных данных, которые не нужно сохранять между перезапусками контейнеров Docker.
+
+
 ```shell
+# Стартуем контейнер с PostgreSQL, которая хранит свои данные в tmpfs
 docker run --rm -d \
     --name postgres_1 \
     -e POSTGRES_PASSWORD=toor \
@@ -104,9 +116,23 @@ docker run --rm -d \
     --mount type=tmpfs,destination=/var/lib/postgresql/data \
         postgres:16.2-bookworm
 
+# Короткая версия аргумента --mount это --tmpfs
+docker run --rm -d \
+    --name postgres_2 \
+    -e POSTGRES_PASSWORD=toor \
+    -e POSTGRES_DB=demo \
+    --tmpfs /var/lib/postgresql/data \
+        postgres:16.2-bookworm
+
 # Просмотр смонтированных файловых систем как tmpfs в запущенном контейнере
 docker exec postgres_1 mount | grep ^tmpfs
 
 # Просмотр смонтированных файловых систем как tmpfs (не работает для аргумента --tmpfs)
-docker inspect --format '{{json .Mounts }}' postgres_1
+docker inspect --format '{{json .Mounts}}' postgres_1
 ```
+
+## Ссылки
+
+* [Docker docs - Volumes](https://docs.docker.com/storage/volumes/)
+* [Tmpfs](https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html)
+* [Расширение Flask-Uploader](https://flask-uploader.readthedocs.io/ru/latest/)

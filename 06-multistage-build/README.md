@@ -37,7 +37,7 @@ docker build -t example-react -f Dockerfile --target development ./app
 # Запуск контейнера в среде разработки
 docker run --rm -ti \
     --name react_1 \
-    -p "3000:3000" \
+    -p "127.0.0.1:3000:3000" \
     -v "$(pwd)/app:/app" \
     example-react
 
@@ -67,4 +67,7 @@ docker run --rm ipclassifier
 ## Ссылки
 
 * [Docker docs - Build context](https://docs.docker.com/build/building/context/)
+* [Docker docs - Multi-stage](https://docs.docker.com/build/guide/multi-stage/)
 * [.gitignore docs](https://git-scm.com/docs/gitignore)
+* [React Framework](https://react.dev/)
+* [Create React App](https://create-react-app.dev/)

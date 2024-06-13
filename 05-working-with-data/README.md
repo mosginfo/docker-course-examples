@@ -188,4 +188,8 @@ docker volume prune -a
 * [Команда chown Linux](https://losst.pro/komanda-chown-linux)
 * [Команда chmod Linux](https://losst.pro/komanda-chmod-linux)
 * [Команда umask в Linux](https://losst.pro/komanda-umask-v-linux)
+* [Настраиваем сетевую файловую систему NFS в Debian и Ubuntu](https://interface31.ru/tech_it/2023/07/
+nastraivaem-setevuyu-faylovuyu-sistemu-nfs-v-debian-i-ubuntu.html)
+* [Tmpfs](https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html)
+* [SSHFS](https://ru.wikipedia.org/wiki/SSHFS)
 * [Расширение Flask-Uploader](https://flask-uploader.readthedocs.io/ru/latest/)

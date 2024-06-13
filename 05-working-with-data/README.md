@@ -51,6 +51,7 @@ docker run --rm -ti \
             flask run -h 0.0.0.0
 ```
 
+
 ## Volumes
 
 С помощью инструкции `VOLUME` можно описать точки монтирования томов.
@@ -78,9 +79,8 @@ docker run --rm -ti \
 
 # Пример с СУБД PostgeSQL
 
-docker pull postgres:16.2-bookworm
-
 # Просмотр задекларированных томов в образе
+docker pull postgres:16.2-bookworm
 docker inspect --format '{{json .Config.Volumes}}' postgres:16.2-bookworm
 
 # Стартуем контейнер с использованием именованного тома
@@ -97,6 +97,43 @@ docker exec -i postgres_1 psql -U postgres demo < schema.pg.sql
 # Выбираем из БД все категории
 docker exec -i postgres_1 psql -U postgres demo -c 'SELECT * FROM category;'
 ```
+
+### Создание томов вручную
+
+```shell
+# Просмотр доступных драйверов для создания томов
+docker info --format '{{.Plugins.Volume}}'
+
+# Создает NFS том
+docker volume create \
+    -d local \
+    -o type=nfs \
+    -o o=addr=192.168.88.184,nfsvers=4 \
+    -o device=:/docker_volumes/dbdata/mongo_example \
+        mongodata_nfs
+
+# Просмотр информации о томах
+docker inspect mongodata_nfs
+
+# Просмотр задекларированных томов в образе
+docker pull mongo:7.0.11-jammy
+docker inspect --format '{{json .Config.Volumes}}' mongo:7.0.11-jammy
+
+# Стартуем контейнер с указанием NFS-тома
+docker run --rm -d \
+    --name mongo_1 \
+    -e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
+    -e MONGO_INITDB_ROOT_PASSWORD=secret \
+    -v mongodata_nfs:/data/db \
+        mongo:7.0.11-jammy
+
+# Вручную добавляем данные в коллекцию categories
+docker exec -i mongo_1 mongosh -u mongoadmin -p secret < categories.js
+
+# Выбираем все элементы коллекции categories
+docker exec mongo_1 mongosh -u mongoadmin -p secret --eval 'db.categories.find()'
+```
+
 
 ## tmpfs
 
@@ -131,8 +168,24 @@ docker exec postgres_1 mount | grep ^tmpfs
 docker inspect --format '{{json .Mounts}}' postgres_1
 ```
 
+## Удаление томов
+
+```shell
+# Удалить выбранный том
+docker volume rm <VOLUME_NAME>
+
+# Удалить все не используемые анонимные тома
+docker volume prune
+
+# Удалить все не используемые тома
+docker volume prune -a
+```
+
 ## Ссылки
 
 * [Docker docs - Volumes](https://docs.docker.com/storage/volumes/)
 * [Tmpfs](https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html)
+* [Команда chown Linux](https://losst.pro/komanda-chown-linux)
+* [Команда chmod Linux](https://losst.pro/komanda-chmod-linux)
+* [Команда umask в Linux](https://losst.pro/komanda-umask-v-linux)
 * [Расширение Flask-Uploader](https://flask-uploader.readthedocs.io/ru/latest/)

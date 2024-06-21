@@ -36,3 +36,4 @@ docker run --rm -ti \
 * [Команда wget Linux](https://losst.pro/komanda-wget-linux)
 * [cURL](https://ru.wikipedia.org/wiki/CURL)
 * [Как пользоваться curl](https://losst.pro/kak-polzovatsya-curl)
+* [WebOne: Выходим в интернет в 2024 году через IE6 и Firefox 3](https://youtu.be/Rflb7_M7QSU)

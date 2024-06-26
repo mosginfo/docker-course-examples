@@ -1,4 +1,4 @@
-# Урок 9. Часть 1. Журналирование
+# Урок 9. Журналирование
 
 Запущенная в Docker-контейнере служба должна записывать свои логи в стандартный поток вывода и в стандартный поток ошибок.
 В противном случае, команды для работы с журналами в Docker будут не доступны.
@@ -152,3 +152,7 @@ sudo systemctl daemon-reload && sudo systemctl restart docker
 ## Ссылки
 
 * [Docker docs - Configure logging drivers](https://docs.docker.com/config/containers/logging/configure/)
+* [ISO 8601 - международный стандарт, который описывает форматы дат и времени](https://en.wikipedia.org/wiki/ISO_8601)
+* [Linux - Потоки, перенаправление потоков, конвейер](https://interface31.ru/tech_it/2021/10/linux---nachinayushhim-chast-7-potoki-perenapravlenie-potokov-konveyer.html)
+* [man grep](https://www.man7.org/linux/man-pages/man1/grep.1.html)
+* [GREP регулярные выражения. Поиск в Linux (кратко, но с юмором =)](https://www.youtube.com/watch?v=PBkJIRmWynM)

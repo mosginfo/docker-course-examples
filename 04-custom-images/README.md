@@ -9,7 +9,7 @@
 > Упоминание об этом встречается в списке устаревших и удаленных возможностей к версии
 > [26.1.4](https://github.com/docker/cli/blob/v26.1.4/docs/deprecated.md#dockerfile-legacy-env-name-value-syntax)
 >
-> Начиная с версии `27+` в консоли печататеся предупреждение
+> Начиная с версии `27+` в консоль выводится предупреждение
 > `LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format`
 
 ```

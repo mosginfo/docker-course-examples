@@ -1,4 +1,4 @@
-FROM node:20.12-bookworm-slim as development
+FROM node:20.12-bookworm-slim AS development
 
 USER node
 
@@ -15,7 +15,7 @@ COPY --chown=node:node ./ ./
 CMD ["npm", "start"]
 
 
-FROM development as build
+FROM development AS build
 
 RUN npm run build
 

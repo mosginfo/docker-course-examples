@@ -1,17 +1,17 @@
 # Не сработает, напечатает $HOME
-FROM debian:bookworm-slim as environ
+FROM debian:bookworm-slim AS environ
 CMD ["echo", "$HOME"]
 
 # Не сработает, будет ошибка ls: cannot access '/lib*': No such file or directory
-FROM debian:bookworm-slim as fpattern
+FROM debian:bookworm-slim AS fpattern
 CMD ["ls", "-d", "/lib*"]
 
 # Не сработает, посчитает > за позиционный аргумент
-FROM debian:bookworm-slim as pipe
+FROM debian:bookworm-slim AS pipe
 CMD ["whoami", ">", "/result.txt"]
 
 # Не сработает, будет ошибка /bin/sh: [echo,: not found
-FROM debian:bookworm-slim as slash
+FROM debian:bookworm-slim AS slash
 CMD ["echo", "-e", "\033[1mBold text\033[0m"]
 
 # Сработает, напечатает Bold text жирным

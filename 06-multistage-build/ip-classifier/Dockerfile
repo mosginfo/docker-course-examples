@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim as compiler
+FROM debian:bookworm-slim AS compiler
 
 ENV DEBIAN_FRONTEND=noninteractive
 

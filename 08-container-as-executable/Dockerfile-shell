@@ -1,21 +1,21 @@
 # Сработает, напечатает /root
-FROM debian:bookworm-slim as environ
+FROM debian:bookworm-slim AS environ
 CMD echo "$HOME"
 
 # Сработает, будут выведены имена файлов, начинающиеся с lib, в корневом каналоге
-FROM debian:bookworm-slim as fpattern
+FROM debian:bookworm-slim AS fpattern
 CMD ls -d /lib*
 
 # Сработает, но смысла в этой команде нет =)
-FROM debian:bookworm-slim as pipe
+FROM debian:bookworm-slim AS pipe
 CMD whoami > /result.txt
 
 # Сработает и напечатает Bold text жирным
-FROM debian:bookworm-slim as slash
+FROM debian:bookworm-slim AS slash
 CMD echo "\033[1mBold text\033[0m"
 
 # Не сработает, ошибка /bin/sh: syntax error: unterminated quoted string 
-FROM debian:bookworm-slim as slash-error
+FROM debian:bookworm-slim AS slash-error
 CMD echo "\"
 
 # Сработает, напечатает обратный слэш

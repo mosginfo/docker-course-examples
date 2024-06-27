@@ -2,6 +2,16 @@
 
 ## Синтаксис Dockerfile
 
+> **Примечание**
+>
+> Начиная с версии [20.10](https://docs.docker.com/engine/release-notes/20.10/#deprecation--removal)
+> синтаксис объявления переменной окружения `ENV name value` считается устаревшим.
+> Упоминание об этом встречается в списке устаревших и удаленных возможностей к версии
+> [26.1.4](https://github.com/docker/cli/blob/v26.1.4/docs/deprecated.md#dockerfile-legacy-env-name-value-syntax)
+>
+> Начиная с версии `27+` в консоли печататеся предупреждение
+> `LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format`
+
 ```
 Создают новый слой
 
@@ -34,8 +44,7 @@
     ENTRYPOINT ["executable", "param1", "param2"]
     ENTRYPOINT command param1 param2
 
-3.  Установливает переменную(ые) среды
-    ENV <key> <value>
+3.  Устанавливает переменные среды
     ENV <key>=<value> ...
 
 4.  Описывает, какие порты прослушивает ваше приложение
@@ -79,6 +88,9 @@
 1.  Указывает автора образа
     MAINTAINER <name>
     LABEL maintainer="Kirill Vercetti <office@kyzima-spb.com>"
+
+2.  Устанавливает одну переменную среды
+    ENV <key> <value>
 ```
 
 
@@ -155,3 +167,4 @@ docker system prune -a
 * [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 * [Настройка приложения Django из переменных среды](https://django-environ.readthedocs.io/en/latest/)
 * [Gunicorn - WSGI HTTP сервер](https://gunicorn.org/)
+

@@ -3,7 +3,7 @@ FROM python:3.12-slim-bookworm
 
 # Переменные окружения
 # Отключает буферизацию вывода для всех потоков
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 # Текущая рабочая директория
 WORKDIR /app

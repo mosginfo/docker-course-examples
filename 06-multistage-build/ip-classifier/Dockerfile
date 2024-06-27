@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim as compiler
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
@@ -17,5 +17,4 @@ FROM scratch
 
 COPY --from=compiler /app/ipclassifier /
 
-Задает исполняемый файл, который будет выполнен всегда при старте контейнера
 ENTRYPOINT ["/ipclassifier"]

@@ -27,7 +27,7 @@ docker run --rm -ti \
     node:20.14-bookworm-slim \
         npx create-react-app app
 
-# или с помощью Vite, но команды запуска сервера, сборки и т.д. другие - нужно править Dockerfile
+# или с помощью Vite, но команды запуска сервера, сборки и т.д. - нужно править Dockerfile
 docker run --rm -ti \
     -u $(id -u):$(id -g) \
     -e HOME=/tmp \

@@ -24,8 +24,17 @@ docker run --rm -ti \
     -e HOME=/tmp \
     -v "$(pwd):/src" \
     -w /src \
-    node:20.12-bookworm-slim \
+    node:20.14-bookworm-slim \
         npx create-react-app app
+
+# или с помощью Vite, но команды запуска сервера, сборки и т.д. другие - нужно править Dockerfile
+docker run --rm -ti \
+    -u $(id -u):$(id -g) \
+    -e HOME=/tmp \
+    -v "$(pwd):/src" \
+    -w /src \
+    node:20.14-bookworm-slim \
+        sh -c 'npm create vite@latest . -- --template react && npm install'
 ```
 
 ### Команды для работы с образом
@@ -71,3 +80,5 @@ docker run --rm ipclassifier
 * [.gitignore docs](https://git-scm.com/docs/gitignore)
 * [React Framework](https://react.dev/)
 * [Create React App](https://create-react-app.dev/)
+* [Scaffolding Your First Vite Project](https://vitejs.dev/guide/#scaffolding-your-first-vite-project)
+

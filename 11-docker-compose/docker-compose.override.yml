@@ -1,0 +1,17 @@
+services:
+  backend:
+    volumes:
+      - ./src/backend:/app
+    environment:
+      FLASK_APP: uploader
+      FLASK_DEBUG: 1
+    command: ["flask", "run", "-h", "0.0.0.0"]
+
+  frontend:
+    build:
+      target: development
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - /app/node_modules
+      - ./src/frontend:/app

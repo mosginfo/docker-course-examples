@@ -37,7 +37,7 @@ photos_uploader = Uploader(
 
 @app.get('/')
 def index():
-    cursor = db.execute('SELECT id, lookup, created FROM photo')
+    cursor = db.execute('SELECT id, lookup, created FROM photo ORDER BY created')
     return [
         {'url': photos_uploader.get_url(p['lookup']), **p}
         for p in cursor.fetchall()

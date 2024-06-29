@@ -10,7 +10,7 @@ COPY --chown=node ./package*.json ./
 
 RUN npm ci
 
-COPY --chown=node:node ./ ./
+COPY --chown=node ./ ./
 
 CMD ["npm", "start"]
 

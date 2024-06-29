@@ -1,0 +1,78 @@
+# Был обязательным в устаревшей версии Docker Compose 1
+#version: "3.8"
+
+name: uploader
+
+volumes:
+  dbdata:
+  uploaderdata:
+
+networks:
+  private:
+    internal: true
+  public:
+
+services:
+  db:
+    image: mysql:8.4
+    networks:
+      - private
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_general_ci"
+    ]
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./src/backend
+    networks:
+      - private
+    environment:
+      FLASK_SECRET_KEY: Very secret string
+      FLASK_UPLOADER_ROOT_DIR: /upload
+      FLASK_MYSQL_HOST: db
+      FLASK_MYSQL_USER: ${MYSQL_USER}
+      FLASK_MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      FLASK_MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - uploaderdata:/upload
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./src/frontend
+    networks:
+      - private
+      - public
+    ports:
+      - "80:80"
+    volumes:
+      - uploaderdata:/upload
+      - ./docker/nginx/virtual_host.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    networks:
+      - private
+      - public
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - db
+    profiles:
+      - debug
+    restart: unless-stopped

@@ -76,11 +76,13 @@ function App() {
         </Navbar>
         <div className="flex-grow-1 d-flex align-items-stretch">
           <Container fluid>
-            <Row className="mt-4">
-              <Col>
-                <AlertDismissible state={alertState} setState={setAlertState} />
-              </Col>
-            </Row>
+            {alertState.show && (
+              <Row className="mt-4">
+                <Col>
+                  <AlertDismissible state={alertState} setState={setAlertState} />
+                </Col>
+              </Row>
+            )}
             <Row className="my-4">
               <Col>
                 <UploadForm onSubmit={handleSubmit} />

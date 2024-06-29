@@ -1,77 +1,44 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {
   useEffect,
-  useRef,
   useState,
 } from 'react'
 import {
-  Button,
-  Carousel,
   Col,
   Container,
-  Form,
-  InputGroup,
   Navbar,
   Row,
 } from 'react-bootstrap'
+
+import AlertDismissible from './components/AlertDismissible.jsx'
+import Gallery from './components/Gallery.jsx'
+import UploadForm from './components/UploadForm.jsx'
 
 
 const API_URL = '/api/';
 
 
-function UploadForm({ onSubmit }) {
-  const handleSubmit = async e => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    onSubmit && onSubmit(formData)
-  }
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      <InputGroup>
-        <Form.Control type="file" name="file" />
-        <Button type="submit">Submit</Button>
-      </InputGroup>
-    </Form>
-  )
-}
-
-function Gallery({ photos, onDelete, ...carouselProps }) {
-  const handleClickDelete = e => {
-    if (event.target && event.target.dataset.action === 'delete') {
-      const lookup = event.target.dataset.lookup
-      onDelete && onDelete(lookup)
-    }
-  }
-
-  const slides = photos.map(photo => (
-    <Carousel.Item key={photo.lookup}>
-      <img src={photo.url} className="d-block w-100" alt="" />
-      <Carousel.Caption>
-        <Button variant="danger" data-action="delete" data-lookup={photo.lookup}>Delete</Button>
-      </Carousel.Caption>
-    </Carousel.Item>
-  ));
-
-  return (
-    <Carousel onClick={handleClickDelete} {...carouselProps}>
-      {slides}
-    </Carousel>
-  )
-}
-
-
 function App() {
   const [photos, setPhotos] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [alertState, setAlertState] = useState({
+    show: false,
+    message: '',
+    variant: '',
+  })
+
+  const showAlert = ({message, title, variant='success'}) => {
+    setAlertState({title, message, variant, show: true})
+  }
 
   const handleDelete = async lookup => {
     try {
         await fetch(`${API_URL}/${lookup}`, {method: 'DELETE'})
         setPhotos(prevPhotos => prevPhotos.filter(p => p.lookup !== lookup))
         currentIndex >= photos.length - 1 && setCurrentIndex(0)
-      } catch (error) {
-        console.error('Error deleting photo:', error)
+        showAlert({message: 'Фотография успешно удалена'})
+      } catch (err) {
+        showAlert({message: `Ошибка удаления фотографии: ${err}`, variant: 'danger'})
       }
   }
 
@@ -86,16 +53,17 @@ function App() {
           [...prevPhotos, addedPhoto]
         )
       ))
+      showAlert({message: 'Фотография успешно добавлена'})
     } catch (err) {
-      console.error('Error uploading photo:', err)
+      showAlert({message: `Ошибка загрузки фотографии: ${err}`, variant: 'danger'})
     }
   }
 
   useEffect(() => {
     fetch(API_URL)
       .then(resp => resp.json())
-      .catch(err => console.error('Error fetching photos:', err))
-      .then(data => setPhotos(data.files))
+      .catch(err => showAlert({message: `Ошибка получения фотографий: ${err}`, variant: 'danger'}))
+      .then(setPhotos)
   }, [])
 
   return (
@@ -108,6 +76,11 @@ function App() {
         </Navbar>
         <div className="flex-grow-1 d-flex align-items-stretch">
           <Container fluid>
+            <Row className="mt-4">
+              <Col>
+                <AlertDismissible state={alertState} setState={setAlertState} />
+              </Col>
+            </Row>
             <Row className="my-4">
               <Col>
                 <UploadForm onSubmit={handleSubmit} />

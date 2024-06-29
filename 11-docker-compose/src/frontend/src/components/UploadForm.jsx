@@ -10,6 +10,7 @@ export default function({ onSubmit }) {
     e.preventDefault()
     const formData = new FormData(e.target)
     onSubmit && onSubmit(formData)
+    e.target.reset()
   }
 
   return (

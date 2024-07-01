@@ -1,21 +1,23 @@
-# Был обязательным в устаревшей версии Docker Compose 1
-#version: "3.8"
-
+# Имя проекта
 name: uploader
 
+# Определение именованных томов
 volumes:
   dbdata:
   uploaderdata:
 
+# Определение сетей
 networks:
   private:
     internal: true
   public:
 
+# Определение конфигураций
 configs:
   nginx_config:
     file: ./docker/nginx/virtual_host.conf
 
+# Определение сервисов
 services:
   db:
     image: mysql:8.4

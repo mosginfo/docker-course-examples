@@ -1,16 +1,16 @@
 # Имя проекта
 name: uploader
 
-# Определение именованных томов
-volumes:
-  dbdata:
-  uploaderdata:
-
 # Определение сетей
 networks:
   private:
     internal: true
   public:
+
+# Определение именованных томов
+volumes:
+  dbdata:
+  uploaderdata:
 
 # Определение конфигураций
 configs:

@@ -8,7 +8,8 @@ EXPOSE 5173
 
 COPY --chown=node ./package*.json ./
 
-RUN npm ci
+RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 \
+    npm ci
 
 COPY --chown=node ./ ./
 

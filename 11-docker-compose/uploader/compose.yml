@@ -14,7 +14,7 @@ volumes:
 
 # Определение конфигураций
 configs:
-  nginx_config:
+  nginx_default:
     file: ./docker/nginx/virtual_host.conf
 
 # Определение сервисов
@@ -64,7 +64,7 @@ services:
     ports:
       - "80:80"
     configs:
-      - source: nginx_config
+      - source: nginx_default
         target: /etc/nginx/conf.d/default.conf
     volumes:
       - uploaderdata:/upload

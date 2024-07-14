@@ -184,7 +184,7 @@ docker compose --profile debug up -d
        ports:
          - "80:80"
        configs:
-         - source: nginx_config
+         - source: nginx_default
            target: /etc/nginx/conf.d/default.conf
        volumes:
          - uploaderdata:/upload

@@ -1,0 +1,22 @@
+name: private-pypi-server
+
+secrets:
+  htpasswd:
+    file: ./secrets/htpasswd
+
+services:
+  pypi:
+    image: pypiserver/pypiserver:v2.1.1
+    secrets:
+      - htpasswd
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./packages:/data/packages
+    command: [
+      "run",
+      "-a", "download, list, update",
+      "-P", "/run/secrets/htpasswd",
+      "--server", "gunicorn"
+    ]
+    restart: unless-stopped

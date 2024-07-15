@@ -1,0 +1,48 @@
+name: web_client_logger
+
+secrets:
+  mongo_root_username:
+    file: ./secrets/mongo_root_username
+  mongo_root_password:
+    file: ./secrets/mongo_root_password
+
+networks:
+  private:
+    internal: true
+  public:
+
+volumes:
+  mongodata:
+
+services:
+  mongo:
+    image: mongo:7.0-jammy
+    secrets:
+      - mongo_root_username
+      - mongo_root_password
+    networks:
+      - private
+    environment:
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGO_INITDB_DATABASE: test_database
+    volumes:
+      - mongodata:/data/db
+    restart: unless-stopped
+
+  app:
+    build: ./src/app
+    secrets:
+      - mongo_root_username
+      - mongo_root_password
+    networks:
+      - private
+      - public
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    # SIGINT является стандартным сигналом в UNIX-подобных операционных системах,
+    # который обычно отправляется процессу при нажатии комбинации клавиш Ctrl+C в терминале
+#    stop_signal: SIGINT
+    restart: unless-stopped

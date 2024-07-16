@@ -1,13 +1,13 @@
 FROM python:3.12-slim-bookworm
 
-# id        ID of the secret. Defaults to basename of the target path.
-# target    Mount path. Defaults to /run/secrets/ + id.
-# required  If set to true, the instruction errors out when the secret is unavailable. Defaults to false.
-# mode      File mode for secret file in octal. Default 0400.
-# uid       User ID for secret file. Default 0.
-# gid       Group ID for secret file. Default 0.
+# id        Идентификатор секрета (по умолчанию basename для пути target)
+# target    Путь монтирования (по умолчанию /run/secrets/ + id)
+# required  Если установлено в true, команда завершится ошибкой, если секрет недоступен (по умолчанию false)
+# mode      Права доступа для файла секрета в восьмеричной системе (по умолчанию 0400)
+# uid       Идентификатор пользователя для файла секрета (по умолчанию 0)
+# gid       Идентификатор группы для файла секрета (по умолчанию 0)
 RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=secret,id=indexurl,target=/root/.indexurl,required=true \
+    --mount=type=secret,id=indexurl,target=/root/.indexurl,required \
     pip install \
         --disable-pip-version-check \
         --index-url "$(cat /root/.indexurl)" \

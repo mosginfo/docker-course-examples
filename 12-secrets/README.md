@@ -3,6 +3,7 @@
 - [Определение секретов в compose.yml](#определение-секретов-в-composeyml)
 - [Доступ к секретам во время сборки](#доступ-к-секретам-во-время-сборки)
 - [Доступ к SSH ключам во время сборки](#доступ-к-ssh-ключам-во-время-сборки)
+- [Ссылки](#ссылки)
 
 ## Определение секретов в compose.yml
 
@@ -74,3 +75,5 @@ docker build -t example-mount-ssh --ssh=default=$HOME/.ssh/id_rsa .
 # Проверка установленного пакета
 docker run --rm example-mount-ssh npm list | grep api-call-simplifier
 ```
+
+## Ссылки

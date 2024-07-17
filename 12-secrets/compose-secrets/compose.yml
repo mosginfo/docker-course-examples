@@ -39,10 +39,37 @@ services:
       - private
       - public
     ports:
-      - "5000:5000"
+      - "80:80"
+    environment:
+      MONGO_HOST: mongo
+      MONGO_USERNAME_FILE: /run/secrets/mongo_root_username
+      MONGO_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGO_DATABASE: test_database
     depends_on:
       - mongo
-    # SIGINT является стандартным сигналом в UNIX-подобных операционных системах,
-    # который обычно отправляется процессу при нажатии комбинации клавиш Ctrl+C в терминале
-#    stop_signal: SIGINT
+    restart: unless-stopped
+    volumes:
+      - ./src/app:/var/www/html:ro
+
+  mongo-express:
+    image: mongo-express
+    secrets:
+      - mongo_root_username
+      - mongo_root_password
+    networks:
+      - private
+      - public
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME_FILE: /run/secrets/mongo_root_username
+      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongo_root_password
+      # Логин/Пароль для веб морды совпадает с логин/паролем админа (лучше так не делать =)
+      ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_root_username
+      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_root_password
+    profiles:
+      - debug
+    depends_on:
+      - mongo
     restart: unless-stopped

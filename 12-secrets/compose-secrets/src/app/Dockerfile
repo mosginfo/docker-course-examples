@@ -1,5 +1,8 @@
 FROM php:8.3-apache
 
+# /var/cache/apt - кеш загруженных пакетов
+# /var/lib/apt - метаданные о пакетах
+# sharing=locked - кэш будет синхронизирован между сборками и не будет конфликтовать при параллельных запусках
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     # Эта команда удаляет файл конфигурации docker-clean,

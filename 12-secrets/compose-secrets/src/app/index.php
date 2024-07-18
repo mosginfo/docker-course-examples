@@ -14,8 +14,7 @@ function getConfig($varName, $required=false)
     }
 
     if (($value = getenv($varName)) === false && $required) {
-        error_log('Environment variable ' . $varName . ' is required to set.');
-        die;
+        throw new Exception('Environment variable ' . $varName . ' is required to set.');
     }
 
     return $value;
@@ -79,14 +78,14 @@ function queryVisits(Manager $manager, $db)
 }
 
 
-$manager = getManager(
-    getConfig('MONGO_HOST'),
-    getConfig('MONGO_USERNAME'),
-    getConfig('MONGO_PASSWORD'),
-);
-$db = getConfig('MONGO_DATABASE');
-
 try {
+    $manager = getManager(
+        getConfig('MONGO_HOST'),
+        getConfig('MONGO_USERNAME'),
+        getConfig('MONGO_PASSWORD'),
+    );
+    $db = getConfig('MONGO_DATABASE');
+
     logVisit($manager, $db);
 
     $response = [];
@@ -95,7 +94,7 @@ try {
         $row->lastVisit = $row->lastVisit->toDateTime()->format('c');
         $response[] = $row;
     }
-} catch(MongoException $err) {
+} catch(Exception $err) {
     error_log($err->getMessage());
     http_response_code(500);
     $response = [

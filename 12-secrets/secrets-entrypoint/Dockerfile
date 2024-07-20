@@ -1,4 +1,6 @@
-FROM php:8.3-apache
+ARG PHP_VERSION="8.3-apache"
+
+FROM php:${PHP_VERSION}
 
 # Копируем из вспомогательного образа
 # все необходимые библиотеки и скрипты/программы

@@ -6,7 +6,7 @@ BIN_DIR="$(dirname "$(readlink -f "$0")")"
 SECRET_DIR="$(dirname $BIN_DIR)/secrets"
 
 MONGO_ROOT_USERNAME="$SECRET_DIR/mongo_root_username"
-MONGO_ROOT_PASSWORD="$SECRET_DIR/mongo_root_password2"
+MONGO_ROOT_PASSWORD="$SECRET_DIR/mongo_root_password"
 
 if [ ! -f "$MONGO_ROOT_USERNAME" ]; then
   username=''

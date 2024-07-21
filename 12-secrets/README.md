@@ -39,10 +39,10 @@ docker compose --project-directory ./pypi-server up -d
 
 
 # Генерация файла-секрета для аргумента indexurl
-echo "http://user:test@$(hostname -I | awk '/^192/ {print $1}'):8080" > ./image/secrets/indexurl
+echo "http://user:test@$(hostname -I | awk '/^192/ {print $1}'):8080" > ./app/secrets/indexurl
 
 # Сборка образа с указанием файла-секрета
-docker build -t example-mount-secret --secret id=indexurl,src=./image/secrets/indexurl ./image
+docker build -t example-mount-secret --secret id=indexurl,src=./app/secrets/indexurl ./app
 
 # Проверка установленного пакета
 docker run --rm example-mount-secret pip freeze | grep kirill-vercetti
@@ -90,7 +90,7 @@ SSH ключи - это конфиденциальные данные, копи�
 docker build -t example-mount-ssh --ssh=default=$HOME/.ssh/id_rsa .
 
 # Проверка установленного пакета
-docker run --rm example-mount-ssh npm list | grep api-call-simplifier
+docker run --rm example-mount-ssh npm list | grep kirill-vercetti
 ```
 
 ## Пример вспомогательного образа

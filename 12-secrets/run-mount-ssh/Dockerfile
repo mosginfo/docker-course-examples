@@ -4,23 +4,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# /var/cache/apt - кеш загруженных пакетов
-# /var/lib/apt - метаданные о пакетах
-# sharing=locked - кэш будет синхронизирован между сборками и не будет конфликтовать при параллельных запусках
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    # Эта команда удаляет файл конфигурации docker-clean,
-    # который по умолчанию удаляет загруженные пакеты, чтобы уменьшить размер образа
-    # Удаление этого файла позволяет сохранить кэш загруженных пакетов
-    rm -f /etc/apt/apt.conf.d/docker-clean; \
-    # Эта команда создает новый файл конфигурации keep-cache, в который добавляется директива,
-    # указывающая apt сохранять загруженные пакеты после установки
-    # Это помогает использовать эти пакеты в последующих сборках образа,
-    # тем самым уменьшая время установки при повторных сборках
-    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+    rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && apt update && apt install -yq --no-install-recommends \
+        # для работы с ssh нужен клиент
         openssh-client \
+        # пакет git нужен для установки из git репозитория
         git \
+        # можно ставить npm-пакеты из публичных репозиториев по http(s)
+        # ca-certificates нужен, чтобы избежать ошибки с сертификатами
+        ca-certificates \
     && mkdir -p -m 0700 ~/.ssh \
     && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
@@ -31,4 +25,4 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # uid       Идентификатор пользователя для сокета (по умолчанию 0)
 # gid       Идентификатор группы для сокета (по умолчанию 0)
 RUN --mount=type=ssh,required \
-    npm i git+ssh://git@github.com:kyzima-spb/api-call-simplifier.git#v0.2.1
+    npm i git+ssh://@github.com:kyzima-spb/kirill-vercetti-npm-package.git#v1.0.0

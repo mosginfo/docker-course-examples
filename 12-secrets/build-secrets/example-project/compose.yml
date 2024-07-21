@@ -1,0 +1,16 @@
+secrets:
+  indexurl:
+    file: ./secrets/indexurl
+
+services:
+  python_app:
+    build:
+      context: ./src/run-mount-secret
+      secrets:
+        - indexurl
+
+  node_app:
+    build:
+      context: ./src/run-mount-ssh
+      ssh:
+        - default=$HOME/.ssh/id_rsa

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\BulkWrite;
@@ -7,7 +8,7 @@ use MongoDB\Driver\Exception\Exception as MongoException;
 use MongoDB\Driver\Manager;
 
 
-function getConfig($varName, $required=false)
+function getConfig(string $varName, bool $required=false): string
 {
     if ($secretFile = getenv($varName . '_FILE')) {
         return trim(file_get_contents($secretFile));
@@ -21,7 +22,7 @@ function getConfig($varName, $required=false)
 }
 
 
-function getManager($host, $username, $password)
+function getManager(string $host, string $username, string $password): Manager
 {
     return new Manager("mongodb://$host", [
         'username' => $username,
@@ -31,7 +32,7 @@ function getManager($host, $username, $password)
 }
 
 
-function logVisit(Manager $manager, $db)
+function logVisit(Manager $manager, string $db)
 {
     $now = new DateTime('now', new DateTimeZone('UTC'));
     $bulk = new BulkWrite();
@@ -40,11 +41,11 @@ function logVisit(Manager $manager, $db)
         'browser' => $_SERVER['HTTP_USER_AGENT'],
         'timestamp' => new UTCDateTime($now),
     ]);
-    return $manager->executeBulkWrite("$db.access_log", $bulk);
+    $manager->executeBulkWrite("$db.access_log", $bulk);
 }
 
 
-function queryVisits(Manager $manager, $db)
+function queryVisits(Manager $manager, string $db): array
 {
     $pipeline = [
         [
@@ -80,11 +81,11 @@ function queryVisits(Manager $manager, $db)
 
 try {
     $manager = getManager(
-        getConfig('MONGO_HOST'),
-        getConfig('MONGO_USERNAME'),
-        getConfig('MONGO_PASSWORD'),
+        getConfig('MONGO_HOST', true),
+        getConfig('MONGO_USERNAME', true),
+        getConfig('MONGO_PASSWORD', true),
     );
-    $db = getConfig('MONGO_DATABASE');
+    $db = getConfig('MONGO_DATABASE', true);
 
     logVisit($manager, $db);
 

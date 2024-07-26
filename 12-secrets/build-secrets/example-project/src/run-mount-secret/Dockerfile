@@ -1,5 +1,7 @@
 FROM python:3.12-slim-bookworm
 
+ENV PYTHONUNBUFFERED=1
+
 # id        Идентификатор секрета (по умолчанию basename для пути target)
 # target    Путь монтирования (по умолчанию /run/secrets/ + id)
 # required  Если установлено в true, команда завершится ошибкой, если секрет недоступен (по умолчанию false)

@@ -14,9 +14,13 @@ services:
     volumes:
       - ./packages:/data/packages
     command: [
+      # запускает сервер
       "run",
+      # какие действия разрешены: установка, просмотр и загрузка пакетов
       "-a", "download, list, update",
+      # путь к файлу с аутентификационными данными
       "-P", "/run/secrets/pypi_htpasswd",
+      # используемый веб сервер gunicorn
       "--server", "gunicorn"
     ]
     restart: unless-stopped

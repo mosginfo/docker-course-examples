@@ -1,3 +1,5 @@
+name: example-project
+
 secrets:
   indexurl:
     file: ./secrets/indexurl

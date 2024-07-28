@@ -7,6 +7,7 @@
   - [Анонимные тома](#анонимные-тома)
 - [tmpfs](#tmpfs)
 - [Удаление томов](#удаление-томов)
+- [Вопросы](#вопросы)
 - [Ссылки](#ссылки)
 
 ## Bind mounts – на примере веб приложения Uploader
@@ -197,6 +198,21 @@ docker volume prune
 
 # Удалить все не используемые тома
 docker volume prune -a
+```
+
+## Вопросы
+
+> Как докер понимает что в одном случае `-v source:target` это том, а в другом что это папка?
+
+`-v test:/mount_point` - это имя тома, потому что нет явного указания пути,
+а папка `test` в текущей директории должна быть указана как `-v ./test:/mount_point`.
+
+`-v ./test:/mount_point`, `-v "$(pwd)/test:/mount_point"` или `-v /test:/mount_point` -
+это монтирование директории с хостовой машины, потому что есть символ разделителя путей:
+
+```
+➜  docker volume create ./test
+Error response from daemon: create ./test: "./test" includes invalid characters for a local volume name, only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. If you intended to pass a host directory, use absolute path
 ```
 
 ## Ссылки

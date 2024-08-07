@@ -37,3 +37,4 @@ docker run --rm -ti \
 * [cURL](https://ru.wikipedia.org/wiki/CURL)
 * [Как пользоваться curl](https://losst.pro/kak-polzovatsya-curl)
 * [WebOne: Выходим в интернет в 2024 году через IE6 и Firefox 3](https://youtu.be/Rflb7_M7QSU)
+* [WebOne: Выходим в интернет в 2024 году через IE6 и Firefox 3 [Перезалив с YouTube]](https://rutube.ru/video/3cf879626dfd57b5c7bccea2099dd0c3/)

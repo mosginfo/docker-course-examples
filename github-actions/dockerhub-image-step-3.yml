@@ -1,0 +1,98 @@
+# Имя задачи, которая будет собирать, тестировать и публиковать Docker образ в реестр
+name: Build, test and publish image
+
+# Определение условий, при которых задача будет запускаться
+on:
+  push:
+    branches:
+      - master                                    # Задача запускается при пуше в ветку master
+      - dev-master                                # и ветку dev-master
+    paths:
+      - .github/workflows/dockerhub-image.yml     # Задача запускается при изменении текущего workflow,
+      - 'docker/**'                               # или любых файлов в директории docker
+  pull_request:                                   # Задача запускается при создании pull request
+    paths:
+      - .github/workflows/dockerhub-image.yml     # Задача запускается при изменении текущего workflow,
+      - 'docker/**'                               # или любые файлы в директории docker
+
+# Определение работ
+jobs:
+  build:                                          # Определение работы для сборки, тестирования и загрузки образа в реестр
+    runs-on: ubuntu-latest                        # Работа выполняется на последней версии Ubuntu
+    strategy:                                     # Определение параметров работы
+      matrix:                                     # Определение матричной стратегии (поддерживаются одномерные и многомерные матрицы)
+        version: ["0.16.3", "0.17.0", "0.17.1"]  # build будет запущен со всеми комбинациями параметров
+        dotnet_version: ["6.0", "8.0"]
+        include:
+          - latest: false
+            latest_dotnet: false
+          - latest: true
+            version: "0.17.1"
+          - latest_dotnet: true
+            dotnet_version: "8.0"
+    steps:                                        # Определение последовательности шагов (задач), из которых состоит работа
+      -
+        name: Checkout                            # Клонируем текущий репозиторий
+        uses: actions/checkout@v4                 # с помощью официального Github Action
+      -
+        name: Docker meta                         # Назначаем метаданные Docker образу
+        uses: docker/metadata-action@v5           # с помощью GitHub Action от авторов Docker
+        id: meta                                  # Уникальный идентификатор для ссылки на шаг в контекстах
+        with:                                     # Указываем параметры действия
+          images: |                               # Список Docker образов для использования в качестве базового имени для tags
+            ${{ vars.IMAGE_NAME }}
+          tags: |                                 # Список тегов, которые будут добавлены Docker образам из images
+            type=raw,${{ matrix.version }},enable=${{ matrix.latest_dotnet }}
+            type=raw,dotnet${{ matrix.dotnet_version }},enable=${{ matrix.latest }}
+            ${{ matrix.version }}-dotnet${{ matrix.dotnet_version }}
+          flavor: |                               # Цитата: "определяет глобальное поведение для tags", можно указать признак latest, суффикс и префикс
+            latest=${{ matrix.latest && matrix.latest_dotnet }}
+      -
+        name: Set CACHE_IMAGE environment variable              # Установка переменной окружения с именами образа для кеша
+        run: echo "CACHE_IMAGE=${{ vars.IMAGE_NAME }}:buildcache-${{ steps.meta.outputs.version }}" >> $GITHUB_ENV
+      -
+        name: Set TEST_IMAGE environment variable               # Установка переменной окружения с именами тестового образа
+        run: echo "TEST_IMAGE=${{ vars.IMAGE_NAME }}:test-${{ steps.meta.outputs.version }}" >> $GITHUB_ENV
+      -
+        name: Set up Docker Buildx                              # Настройка Docker Buildx для сборки мультиплатформенных образов
+        uses: docker/setup-buildx-action@v3                     # с помощью GitHub Action от авторов Docker
+      -
+        name: Build test image and export to Docker             # Сборка и экспорт тестового Docker образа на клиент
+        uses: docker/build-push-action@v6                       # с помощью GitHub Action от авторов Docker
+        with:                                                   # Указываем параметры действия:
+          context: ./docker/root                                # - контекст сборки
+          file: ./docker/Dockerfile                             # - путь к Dockerfile, т.к. он вне контекста сборки
+          build-args: |                                         # - значения для переменных времени сборки
+            WEBONE_VERSION=${{ matrix.version }}
+            DOTNET_VERSION=${{ matrix.dotnet_version }}
+          tags: ${{ env.TEST_IMAGE }}                           # - только один тег: имя тестового образа
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}  # - импортировать кэш из специального образа в реестре
+          load: true                                            # - экспорт одноплатформенного образа в виде архива на клиент
+      -
+        name: Executing tests                                   # Тестируем собранный образ
+        working-directory: ./docker/tests                       # Указываем текущую рабочую директория как docker/tests
+        run: |                                                  # Запускаем тесты с пользовательской конфигурацией и от случайного пользователя
+          bash test_proxy.sh -v ./custom.conf:/opt/webone/webone.conf.d/100_custom.conf ${{ env.TEST_IMAGE }}
+          bash test_proxy.sh -v ./custom.conf:/opt/webone/webone.conf.d/100_custom.conf -u 1001:1001 ${{ env.TEST_IMAGE }}
+      -                                                                # Шаг будет выполнен только, если условие из if вернет истину
+        if: ${{ github.event_name == 'push' &&  github.ref_name == 'master' }}
+        name: Login to Docker Hub                                      # Аутентификация на Docker Hub
+        uses: docker/login-action@v3                                   # с помощью GitHub Action от авторов Docker
+        with:                                                          # Указываем параметры действия:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}                 # Имя пользователя Docker Hub, хранится в секрете
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}             # Токен доступа Docker Hub, хранится в секрете
+      -                                                                # Шаг будет выполнен только, если условие из if вернет истину
+        if: ${{ github.event_name == 'push' &&  github.ref_name == 'master' }}
+        name: Build and push                                           # Сборка и публикация Docker образа в реестре
+        uses: docker/build-push-action@v6                              # с помощью GitHub Action от авторов Docker
+        with:                                                          # Указываем параметры действия:
+          context: ./docker/root                                       # - контекст сборки
+          file: ./docker/Dockerfile                                    # - путь к Dockerfile, т.к. он вне контекста сборки
+          build-args: |                                                # - значения для переменных времени сборки
+            WEBONE_VERSION=${{ matrix.version }}
+            DOTNET_VERSION=${{ matrix.dotnet_version }}
+          tags: ${{ steps.meta.outputs.tags }}                         # - теги: все присвоенные на шаге meta
+          labels: ${{ steps.meta.outputs.labels }}                     # - другие метаданные образа для инструкции LABEL
+          annotations: ${{ steps.meta.outputs.annotations }}           # - аннотации
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }},mode=max  # - экспортировать кеш в специальный образ в реестре со всеми промежуточными слоями
+          push: true                                                   # - опубликовать образ в реестре

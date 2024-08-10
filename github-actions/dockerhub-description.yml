@@ -10,11 +10,11 @@ on:
       - .github/workflows/dockerhub-description.yml  # Задача запускается при изменении текущего workflow
       - README.md                                    # или файла README.md
 
-# Определение работ
+# Определение заданий
 jobs:
-  dockerhub-description:                                    # Определение работы для обновления описания Docker Hub
-    runs-on: ubuntu-latest                                  # Работа выполняется на последней версии Ubuntu
-    steps:                                                  # Определение последовательности шагов (задач), из которых состоит работа
+  dockerhub-description:                                    # UID задания - обновление описания Docker Hub
+    runs-on: ubuntu-latest                                  # Определение типа компьютера, на котором будет выполняться задание
+    steps:                                                  # Определение последовательности шагов, из которых состоит задание
       -                                                     # Имя шага, может быть любым
         name: Checkout                                      # Клонируем текущий репозиторий
         uses: actions/checkout@v4                           # с помощью официального Github Action

@@ -10,10 +10,6 @@ on:
     paths:
       - .github/workflows/dockerhub-image.yml     # Задача запускается при изменении текущего workflow,
       - 'docker/**'                               # или любых файлов в директории docker
-  pull_request:                                   # Задача запускается при создании pull request
-    paths:
-      - .github/workflows/dockerhub-image.yml     # Задача запускается при изменении текущего workflow,
-      - 'docker/**'                               # или любые файлы в директории docker
 
 # Определение заданий
 jobs:
@@ -44,6 +40,12 @@ jobs:
         name: Set up Docker Buildx                              # Настройка Docker Buildx для сборки мультиплатформенных образов
         uses: docker/setup-buildx-action@v3                     # с помощью GitHub Action от авторов Docker
       -
+        name: Login to Docker Hub                               # Аутентификация на Docker Hub
+        uses: docker/login-action@v3                            # с помощью GitHub Action от авторов Docker
+        with:                                                   # Указываем параметры действия:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}          # Имя пользователя Docker Hub, хранится в секрете
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}      # Токен доступа Docker Hub, хранится в секрете
+      -
         name: Build test image and export to Docker             # Сборка и экспорт тестового Docker образа на клиент
         uses: docker/build-push-action@v6                       # с помощью GitHub Action от авторов Docker
         with:                                                   # Указываем параметры действия:
@@ -58,13 +60,6 @@ jobs:
         run: |                                                  # Запускаем тесты с пользовательской конфигурацией и от случайного пользователя
           bash test_proxy.sh -v ./custom.conf:/opt/webone/webone.conf.d/100_custom.conf ${{ env.TEST_IMAGE }}
           bash test_proxy.sh -v ./custom.conf:/opt/webone/webone.conf.d/100_custom.conf -u 1001:1001 ${{ env.TEST_IMAGE }}
-      -                                                                # Шаг будет выполнен только, если условие из if вернет истину
-        if: ${{ github.event_name == 'push' &&  github.ref_name == 'master' }}
-        name: Login to Docker Hub                                      # Аутентификация на Docker Hub
-        uses: docker/login-action@v3                                   # с помощью GitHub Action от авторов Docker
-        with:                                                          # Указываем параметры действия:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}                 # Имя пользователя Docker Hub, хранится в секрете
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}             # Токен доступа Docker Hub, хранится в секрете
       -                                                                # Шаг будет выполнен только, если условие из if вернет истину
         if: ${{ github.event_name == 'push' &&  github.ref_name == 'master' }}
         name: Build and push                                           # Сборка и публикация Docker образа в реестре

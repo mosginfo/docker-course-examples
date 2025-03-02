@@ -63,47 +63,7 @@ docker rmi debian:bookworm-slim
 docker image prune
 ```
 
-## Сборка мультиплатформенных образов
-
-Сборщик по умолчанию не поддерживает некоторые расширенные функции buildx,
-включая мультиплатформенные сборки и экспорт в формате [OCI](https://opencontainers.org/).
-
-```bash
-# Просмотр доступных сборщиков
-# * отмечен текущий сборщик
-docker buildx ls
-
-# Просмотр информации о текущем сборщике
-# -D выводит дополнительную информацию о сборщике
-docker buildx inspect -D
-
-# Создать новый сборщик с именем multi-oci и сделать текущим
-docker buildx create --name multi-oci --use
-# Тоже самое, но двумя командами
-docker buildx create --name multi-oci
-# Устанавливает сборщик с указанным именем как текущий
-docker buildx use multi-oci
-
-# Сборка мультиплатформенного образа для x86_64 и armv7 с загрузкой в реест
-docker buildx build \
-    --platform linux/amd64,linux/arm/v7 \
-    -t kyzimaspb/example-multi-arch \
-    --push \
-        ./example-multi-arch
-
-# Можно явно указать используемый сборщик
-docker buildx build \
-    --builder multi-oci \
-    --platform linux/amd64,linux/arm/v7 \
-    -t kyzimaspb/example-multi-arch \
-    --push \
-        ./example-multi-arch
-
-# Просмотр доступных платформ для указанного образа
-# (экспериментальная возможность)
-docker manifest inspect kyzimaspb/example-multi-arch
-```
-
+## Вопросы
 
 
 ## Ссылки
